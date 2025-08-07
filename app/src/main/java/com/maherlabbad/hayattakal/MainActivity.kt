@@ -1,6 +1,7 @@
 package com.maherlabbad.hayattakal
 
 import android.app.Application
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -47,9 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.gson.Gson
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.maherlabbad.hayattakal.Screens.DisasterBagScreen
 import com.maherlabbad.hayattakal.Screens.Earthquake_screen
@@ -61,6 +65,7 @@ import com.maherlabbad.hayattakal.Screens.FirstAidDescription.FracturesDislocati
 import com.maherlabbad.hayattakal.Screens.FirstAidScreen
 
 import com.maherlabbad.hayattakal.Screens.MainScreen
+import com.maherlabbad.hayattakal.Screens.MapScreen
 import com.maherlabbad.hayattakal.Screens.Notify_Relatives_Screen
 import com.maherlabbad.hayattakal.db.Model_Database
 import com.maherlabbad.hayattakal.model.EarthquakeModel
@@ -116,6 +121,15 @@ class MainActivity : ComponentActivity() {
                             composable("Disaster_Bag_Screen") {
                                 DisasterBagScreen(navController)
                             }
+                            composable("MapScreen/{encoded}"
+                            , arguments =
+                            listOf(navArgument("encoded") { type = NavType.StringType }))
+                            { backStackEntry ->
+                                val jsonEncoded = backStackEntry.arguments?.getString("encoded")
+                                val json = Uri.decode(jsonEncoded)
+                                val relative = Gson().fromJson(json, EarthquakeModel::class.java)
+                                MapScreen(relative,navController)
+                            }
                         }
                     }
                 }
@@ -134,6 +148,5 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     HayattaKalTheme {
-
     }
 }

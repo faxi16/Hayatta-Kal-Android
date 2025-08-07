@@ -58,6 +58,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation("com.google.android.gms:play-services-maps:19.2.0")
 
     implementation("com.google.accompanist:accompanist-permissions:0.37.3")
     val room_version = "2.7.2"

@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 
 import android.provider.ContactsContract
 
@@ -42,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,6 +57,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.gson.Gson
 import com.maherlabbad.hayattakal.model.Relative_model
 import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
 
@@ -64,8 +67,11 @@ import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
 fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel,navController: NavController){
 
     val context = LocalContext.current
-
+    LaunchedEffect(Unit) {
+        Relative_Model_viewmodel.getItemList()
+    }
     val contacts = Relative_Model_viewmodel.itemList.value
+
 
     val contactPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickContact()
@@ -162,6 +168,7 @@ fun FAB(contactpickerLauncher : ActivityResultLauncher<Void?>){
 @Composable
 fun Relative_Row(relativeModel: Relative_model,Relative_Model_viewmodel: RelativeModelviewmodel){
     val context = LocalContext.current
+    val location = Relative_Model_viewmodel.latlng.value
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
         Row {
             Column(modifier = Modifier.weight(1f).padding(8.dp), verticalArrangement = Arrangement.Center) {
@@ -179,7 +186,7 @@ fun Relative_Row(relativeModel: Relative_model,Relative_Model_viewmodel: Relativ
 
             Button(modifier = Modifier.padding(8.dp),
                 onClick = {
-                    SendSms(context = context, relativeModel = relativeModel)
+                    SendSms(context = context, relativeModel = relativeModel,lat = location.latitude, lng = location.longitude)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface)
             ) {
@@ -189,10 +196,13 @@ fun Relative_Row(relativeModel: Relative_model,Relative_Model_viewmodel: Relativ
     }
 }
 
-fun SendSms(context : Context, relativeModel: Relative_model){
+
+
+fun SendSms(context : Context, relativeModel: Relative_model,lat : Double ,lng : Double){
+
     val smsIntent = Intent(Intent.ACTION_VIEW).apply {
         data = "sms:${relativeModel.phone_number}".toUri()
-        putExtra("sms_body", "message")
+        putExtra("sms_body", "Tehlikedeyim!!! Konumum: https://maps.google.com/?q=$lat,$lng")
     }
     context.startActivity(smsIntent)
 }

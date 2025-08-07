@@ -1,5 +1,6 @@
 package com.maherlabbad.hayattakal.Screens
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.maherlabbad.hayattakal.model.EarthquakeModel
 import com.maherlabbad.hayattakal.viewmodel.EarthquakeViewModel
 import org.threeten.bp.LocalDateTime
@@ -104,7 +106,7 @@ fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel,navController: N
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(items = earthquakes, key = { it.eventId }) { earthquake ->
-                    EarthquakeRow(Earthquake = earthquake,CurrentSource = currentSource)
+                    EarthquakeRow(Earthquake = earthquake,CurrentSource = currentSource, navController = navController)
                 }
             }
 
@@ -114,7 +116,7 @@ fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel,navController: N
 }
 
 @Composable
-fun EarthquakeRow(Earthquake: EarthquakeModel,CurrentSource : String){
+fun EarthquakeRow(Earthquake: EarthquakeModel,CurrentSource : String,navController: NavController){
 
     val Magnitude = Earthquake.magnitude.toDouble()
     var color = Color.Black
@@ -126,7 +128,12 @@ fun EarthquakeRow(Earthquake: EarthquakeModel,CurrentSource : String){
 
     Card(modifier = Modifier
         .fillMaxWidth()
-        .clickable(onClick = {  }),
+        .clickable(onClick = {
+            val gson = Gson()
+            val json = gson.toJson(Earthquake)
+            val encoded = Uri.encode(json)
+            navController.navigate("MapScreen/$encoded")
+        }),
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {

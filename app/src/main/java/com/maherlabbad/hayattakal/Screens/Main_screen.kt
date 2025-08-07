@@ -1,6 +1,7 @@
 package com.maherlabbad.hayattakal.Screens
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,33 +44,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat.requestLocationUpdates
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.maherlabbad.hayattakal.model.Relative_model
 import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
 
+@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(navController: NavController,relativeModelviewmodel: RelativeModelviewmodel) {
+    val context = LocalContext.current
+
+    val fusedLocationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
 
     val multiplePermissionsState = rememberMultiplePermissionsState(permissions =
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.READ_CONTACTS
+            Manifest.permission.READ_CONTACTS,
         ))
 
     LaunchedEffect(Unit) {
-        if (!multiplePermissionsState.allPermissionsGranted) {
+        if (multiplePermissionsState.allPermissionsGranted) {
+            relativeModelviewmodel.startLocationUpdates(fusedLocationClient = fusedLocationClient)
+        }else {
             multiplePermissionsState.launchMultiplePermissionRequest()
         }
     }
-
+    var location = relativeModelviewmodel.latlng.value
     Scaffold(floatingActionButton = {
         val contacts = relativeModelviewmodel.itemList.value
-        FABEmergency(contacts = contacts)
+        FABEmergency(contacts = contacts,location.latitude,location.longitude)
                                     }
         ,floatingActionButtonPosition = FabPosition.End,
         topBar = {
@@ -130,10 +143,10 @@ fun MainScreen(navController: NavController,relativeModelviewmodel: RelativeMode
 }
 
 @Composable
-fun FABEmergency(contacts : List<Relative_model>){
+fun FABEmergency(contacts : List<Relative_model>,lat : Double ,lng : Double){
     val context = LocalContext.current
     FloatingActionButton(onClick = {
-        SendSmstoAll(context,contacts)
+        SendSmstoAll(context,contacts,lat,lng)
     }, shape = RoundedCornerShape(16.dp), containerColor = Color.Red) {
         Column {
             Icon(
@@ -148,12 +161,12 @@ fun FABEmergency(contacts : List<Relative_model>){
     }
 }
 
-fun SendSmstoAll(context: Context,contacts : List<Relative_model>){
+fun SendSmstoAll(context: Context,contacts : List<Relative_model>,lat : Double ,lng : Double){
 
     val smsIntent = Intent(Intent.ACTION_VIEW).apply {
         val numbers = contacts.joinToString(separator = ",") { it.phone_number }
         data = "sms:${numbers}".toUri()
-        putExtra("sms_body", "Tehlikedeyim!!!")
+        putExtra("sms_body", "Tehlikedeyim!!! Konumum: https://maps.google.com/?q=$lat,$lng")
     }
     context.startActivity(smsIntent)
 }
