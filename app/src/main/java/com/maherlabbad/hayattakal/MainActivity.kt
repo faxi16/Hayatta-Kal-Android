@@ -46,11 +46,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.maherlabbad.hayattakal.Screens.DisasterBagScreen
 import com.maherlabbad.hayattakal.Screens.Earthquake_screen
+import com.maherlabbad.hayattakal.Screens.FABEmergency
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Bleeding_screen
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Burn_screen
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Crush_Syndrome_screen
@@ -87,7 +90,7 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavHost(navController = navController, startDestination = "MainScreen") {
                             composable("MainScreen") {
-                                MainScreen(navController)
+                                MainScreen(navController,relativeModelviewmodel)
                             }
                             composable("Notify_Relatives_Screen") {
                                 Notify_Relatives_Screen(relativeModelviewmodel, navController = navController)
@@ -110,16 +113,22 @@ class MainActivity : ComponentActivity() {
                             composable("First_Aid_Screen") {
                                 FirstAidScreen(navController)
                             }
-
-
+                            composable("Disaster_Bag_Screen") {
+                                DisasterBagScreen(navController)
+                            }
                         }
-
                     }
                 }
             }
         }
     }
 }
+
+
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable
