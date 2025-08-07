@@ -18,10 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FracturesDislocations() {
+fun FracturesDislocations(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -32,7 +33,7 @@ fun FracturesDislocations() {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Geri gitme işlemi */ }) {
+                    IconButton(onClick = { navController.navigate("First_Aid_Screen") }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
                     }
                 }

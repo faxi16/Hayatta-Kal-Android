@@ -4,16 +4,14 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.maherlabbad.hayattakal.getStartAndEndDatesForLast24Hours
+import com.maherlabbad.hayattakal.Screens.getStartAndEndDatesForLast24Hours
 import com.maherlabbad.hayattakal.model.EarthquakeModel
-import com.maherlabbad.hayattakal.model.KandilliEarthquake
 import com.maherlabbad.hayattakal.service.EarthquakeApi
 import com.maherlabbad.hayattakal.service.KandilliEarthquakeApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

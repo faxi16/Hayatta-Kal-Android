@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 import com.google.accompanist.permissions.rememberPermissionState
@@ -60,7 +61,7 @@ import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
 @SuppressLint("PermissionLaunchedDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel){
+fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel,navController: NavController){
 
     val context = LocalContext.current
 
@@ -120,7 +121,7 @@ fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel){
                     titleContentColor = MaterialTheme.colorScheme.onSurface
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { /* Geri gitme işlemi */ }) {
+                    IconButton(onClick = { navController.navigate("MainScreen") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                     }
                 }

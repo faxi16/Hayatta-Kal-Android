@@ -17,10 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Burn_screen(){
+fun Burn_screen(navController: NavController){
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,7 +32,7 @@ fun Burn_screen(){
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* Geri gitme işlemi */ }) {
+                    IconButton(onClick = { navController.navigate("First_Aid_Screen") }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
                     }
                 }

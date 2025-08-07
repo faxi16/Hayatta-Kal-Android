@@ -46,6 +46,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.maherlabbad.hayattakal.Screens.Earthquake_screen
+import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Bleeding_screen
+import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Burn_screen
+import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Crush_Syndrome_screen
+import com.maherlabbad.hayattakal.Screens.FirstAidDescription.FracturesDislocations
+import com.maherlabbad.hayattakal.Screens.FirstAidScreen
 
 import com.maherlabbad.hayattakal.Screens.MainScreen
 import com.maherlabbad.hayattakal.Screens.Notify_Relatives_Screen
@@ -64,136 +73,51 @@ import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
     private val relativeModelviewmodel : RelativeModelviewmodel by viewModels<RelativeModelviewmodel>()
+
     private val earthquakeViewModel : EarthquakeViewModel by viewModels<EarthquakeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             HayattaKalTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-
-                        Earthquake_screen(earthquakeViewModel)
-
-                    }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel){
-    val earthquakes by Earthquakeviewmodel.earthquakes.collectAsState()
-    val currentSource by Earthquakeviewmodel.dataSource.collectAsState()
-    val isLoading by Earthquakeviewmodel.isLoading.collectAsState()
-    val context = LocalContext.current
-
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Deprem Takibi",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                navigationIcon = {
-                    IconButton(onClick = {
+                        NavHost(navController = navController, startDestination = "MainScreen") {
+                            composable("MainScreen") {
+                                MainScreen(navController)
+                            }
+                            composable("Notify_Relatives_Screen") {
+                                Notify_Relatives_Screen(relativeModelviewmodel, navController = navController)
+                            }
+                            composable("Earthquake_Screen") {
+                                Earthquake_screen(earthquakeViewModel, navController = navController)
+                            }
+                            composable("Fractures_dislocation_Screen") {
+                                FracturesDislocations(navController)
+                            }
+                            composable("Burn_Screen") {
+                                Burn_screen(navController)
+                            }
+                            composable("Bleeding_Screen") {
+                                Bleeding_screen(navController)
+                            }
+                            composable("CrushSyndrome_Screen") {
+                                Crush_Syndrome_screen(navController)
+                            }
+                            composable("First_Aid_Screen") {
+                                FirstAidScreen(navController)
+                            }
 
 
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
-                    }
-                },actions = {
-                    IconButton(
-                        onClick = {
-                            Earthquakeviewmodel.toggleDataSource()
-                            val nextSource = if (currentSource == "AFAD") "Kandilli" else "AFAD"
-                            Toast.makeText(context, "$nextSource verileri yükleniyor...", Toast.LENGTH_SHORT).show()
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Veri Kaynağını Değiştir"
-                        )
+
                     }
                 }
-            )
-        }
-    ) {innerPadding ->
-
-        if (isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.padding(innerPadding).fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(items = earthquakes, key = { it.eventId }) { earthquake ->
-                    EarthquakeRow(Earthquake = earthquake)
-                }
-            }
-
-        }
-
-    }
-}
-
-@Composable
-fun EarthquakeRow(Earthquake: EarthquakeModel){
-
-    val Magnitude = Earthquake.magnitude.toDouble()
-    var color = Color.Black
-    if(Magnitude < 5 && Magnitude > 3.5){
-        color = Color.Green
-    }else if(Magnitude > 4.5){
-        color = Color.Red
-    }
-
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = {  }),
-        shape = RoundedCornerShape(25.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
-        Row(modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 28.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-            Column(modifier = Modifier.weight(1f)) {
-
-                Text(Earthquake.location)
-                Text(Earthquake.date)
-            }
-
-            Text(Earthquake.magnitude, color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.headlineMedium)
-
         }
     }
 }
-fun getStartAndEndDatesForLast24Hours(): Pair<String, String> {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-
-    val calendar = Calendar.getInstance()
-    val endDate = dateFormat.format(calendar.time)
-
-    calendar.add(Calendar.HOUR_OF_DAY, -24)
-    val startDate = dateFormat.format(calendar.time)
-
-    return Pair(startDate, endDate)
-}
-
-
 
 @Preview(showBackground = true)
 @Composable

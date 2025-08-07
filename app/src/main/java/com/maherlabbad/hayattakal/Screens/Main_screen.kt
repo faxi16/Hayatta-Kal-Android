@@ -37,12 +37,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
 
     val multiplePermissionsState = rememberMultiplePermissionsState(permissions =
         listOf(
@@ -86,7 +87,7 @@ fun MainScreen() {
                 FeatureCard(
                     icon = Icons.Outlined.Info,
                     text = "İlk Yardım Bilgileri",
-                    onClick = { /* TODO: İlk Yardım ekranına yönlendirme */ }
+                    onClick = { navController.navigate("First_Aid_Screen") }
                 )
             }
             item {
@@ -107,14 +108,14 @@ fun MainScreen() {
                 FeatureCard(
                     icon = Icons.Outlined.Send,
                     text = "Yakınlara Haber Ver",
-                    onClick = { /* TODO: Yakınlara Haber Ver ekranına yönlendirme */ }
+                    onClick = { navController.navigate("Notify_Relatives_Screen") }
                 )
             }
             item {
                 FeatureCard(
                     icon = Icons.Rounded.Search,
                     text = "Anlık Deprem Takibi",
-                    onClick = { /* TODO: Deprem Takibi ekranına yönlendirme */ }
+                    onClick = { navController.navigate("Earthquake_Screen") }
                 )
             }
         }
