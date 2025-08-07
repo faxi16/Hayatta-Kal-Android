@@ -19,6 +19,7 @@ import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 
@@ -61,8 +63,8 @@ import java.util.Locale
 import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
-    private val viewModel : RelativeModelviewmodel by viewModels<RelativeModelviewmodel>()
-    private val viewModel2 : EarthquakeViewModel by viewModels<EarthquakeViewModel>()
+    private val relativeModelviewmodel : RelativeModelviewmodel by viewModels<RelativeModelviewmodel>()
+    private val earthquakeViewModel : EarthquakeViewModel by viewModels<EarthquakeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -71,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
 
-                        Earthquake_screen()
+                        Earthquake_screen(earthquakeViewModel)
 
                     }
                 }
@@ -82,7 +84,11 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Earthquake_screen(){
+fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel){
+    val earthquakes by Earthquakeviewmodel.earthquakes.collectAsState()
+    val currentSource by Earthquakeviewmodel.dataSource.collectAsState()
+    val isLoading by Earthquakeviewmodel.isLoading.collectAsState()
+    val context = LocalContext.current
 
 
     Scaffold(
@@ -99,13 +105,18 @@ fun Earthquake_screen(){
                     titleContentColor = MaterialTheme.colorScheme.onSurface
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { /* Geri gitme işlemi */ }) {
+                    IconButton(onClick = {
+
+
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                     }
                 },actions = {
                     IconButton(
                         onClick = {
-
+                            Earthquakeviewmodel.toggleDataSource()
+                            val nextSource = if (currentSource == "AFAD") "Kandilli" else "AFAD"
+                            Toast.makeText(context, "$nextSource verileri yükleniyor...", Toast.LENGTH_SHORT).show()
                         }
                     ) {
                         Icon(
@@ -118,21 +129,25 @@ fun Earthquake_screen(){
         }
     ) {innerPadding ->
 
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                EarthquakeRow(Earthquake = EarthquakeModel("1","154544544","1","1","1","5","1","ghfjskkcksakl"))
+        if (isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier.padding(innerPadding).fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(items = earthquakes, key = { it.eventId }) { earthquake ->
+                    EarthquakeRow(Earthquake = earthquake)
+                }
+            }
+
         }
 
     }
 }
-
 
 @Composable
 fun EarthquakeRow(Earthquake: EarthquakeModel){
@@ -184,6 +199,6 @@ fun getStartAndEndDatesForLast24Hours(): Pair<String, String> {
 @Composable
 fun GreetingPreview() {
     HayattaKalTheme {
-        Earthquake_screen()
+
     }
 }

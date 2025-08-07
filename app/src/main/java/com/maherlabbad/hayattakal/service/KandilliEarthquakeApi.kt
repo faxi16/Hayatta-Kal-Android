@@ -4,6 +4,6 @@ import com.maherlabbad.hayattakal.model.KandilliResponse
 import retrofit2.http.GET
 
 interface KandilliEarthquakeApi {
-    @GET("live.php")
+    @GET("deprem/kandilli/live")
     suspend fun getLiveEarthquakes(): KandilliResponse
 }

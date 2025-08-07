@@ -2,10 +2,7 @@ package com.maherlabbad.hayattakal.viewmodel
 
 import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-
 import androidx.lifecycle.viewModelScope
 import com.maherlabbad.hayattakal.getStartAndEndDatesForLast24Hours
 import com.maherlabbad.hayattakal.model.EarthquakeModel
@@ -13,13 +10,16 @@ import com.maherlabbad.hayattakal.model.KandilliEarthquake
 import com.maherlabbad.hayattakal.service.EarthquakeApi
 import com.maherlabbad.hayattakal.service.KandilliEarthquakeApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class EarthquakeViewModel(application: Application) : AndroidViewModel(application) {
     private val BASE_URL = "https://deprem.afad.gov.tr/"
-    private val BASE_URL_KANDILLI = "https://api.kandilli.org/"
+    private val BASE_URL_KANDILLI = "https://api.orhanaydogdu.com.tr/"
 
     private val retrofitKandilli =
         Retrofit.Builder()
@@ -34,44 +34,66 @@ class EarthquakeViewModel(application: Application) : AndroidViewModel(applicati
         .build()
         .create(EarthquakeApi::class.java)
 
-    val Earthquakes = mutableStateOf<List<EarthquakeModel>>(listOf())
-    val EarthquakesKandilli = mutableStateOf<List<KandilliEarthquake>>(listOf())
+    private val _dataSource = MutableStateFlow("AFAD")
+    val dataSource = _dataSource.asStateFlow()
 
+
+    private val _earthquakes = MutableStateFlow<List<EarthquakeModel>>(emptyList())
+    val earthquakes = _earthquakes.asStateFlow()
+
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     init {
-        loadDataAfad()
-        loadDataKandilli()
+        fetchData()
     }
 
-    fun loadDataAfad(){
-        viewModelScope.launch(Dispatchers.IO){
+    fun toggleDataSource() {
+        _dataSource.value = if (_dataSource.value == "AFAD") "Kandilli" else "AFAD"
+        fetchData()
+    }
+
+    fun fetchData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
             try {
+                val result = if (_dataSource.value == "AFAD") {
+                    fetchAfadData()
+                } else {
+                    fetchKandilliData()
+                }
+                _earthquakes.value = result
+            } catch (e: Exception) {
 
-                val Date = getStartAndEndDatesForLast24Hours()
-                val startDate = Date.first
-                val endDate = Date.second
-                val response = retrofit.getLatestEarthquakes(startDate, endDate)
-                Earthquakes.value = response
-
-            }catch (e : Exception){
+                e.printStackTrace()
                 Log.e("EarthquakeViewModel", "Error loading data", e)
+            } finally {
+                _isLoading.value = false
             }
-
         }
     }
 
-    fun loadDataKandilli(){
-        viewModelScope.launch(Dispatchers.IO){
-            try {
-                val response = retrofitKandilli.getLiveEarthquakes()
-                EarthquakesKandilli.value = response.result
-            }catch (e : Exception){
-                Log.e("EarthquakeViewModel", "Error loading data", e)
-            }
-
-        }
+    private suspend fun fetchAfadData(): List<EarthquakeModel> {
+        val (startDate, endDate) = getStartAndEndDatesForLast24Hours()
+        return retrofit.getLatestEarthquakes(startDate, endDate)
     }
 
+    private suspend fun fetchKandilliData(): List<EarthquakeModel> {
+        val response = retrofitKandilli.getLiveEarthquakes()
 
+        return response.result.map { kandilli ->
+            EarthquakeModel(
+                eventId = kandilli.earthquake_id,
+                date = kandilli.date,
+                latitude = kandilli.geojson.coordinates.getOrElse(1) { 0.0 }.toString(),
+                longitude = kandilli.geojson.coordinates.getOrElse(0) { 0.0 }.toString(),
+                depth = kandilli.depth.toString(),
+                magnitude = kandilli.mag.toString(),
+                type = "ML",
+                location = kandilli.title
+            )
+        }
+    }
 
 }
