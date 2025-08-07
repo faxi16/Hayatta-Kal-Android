@@ -68,6 +68,14 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.9.2")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.9.2")
+    implementation("androidx.compose.runtime:runtime-livedata:1.8.3")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:2.9.2")
+
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:3.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+
 }

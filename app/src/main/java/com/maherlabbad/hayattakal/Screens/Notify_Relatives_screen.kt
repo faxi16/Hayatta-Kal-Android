@@ -6,10 +6,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
+
 import android.provider.ContactsContract
-import android.widget.Toast
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -42,9 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -54,8 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+
 import com.google.accompanist.permissions.rememberPermissionState
 import com.maherlabbad.hayattakal.model.Relative_model
 import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
@@ -108,10 +105,6 @@ fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel){
         }
     }
 
-
-
-
-
     Scaffold(floatingActionButton = {FAB(contactPickerLauncher)}
         ,floatingActionButtonPosition = FabPosition.End
         ,topBar = {
@@ -128,7 +121,7 @@ fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel){
                 ),
                 navigationIcon = {
                     IconButton(onClick = { /* Geri gitme işlemi */ }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                     }
                 }
             )
