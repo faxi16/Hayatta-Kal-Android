@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,45 +40,47 @@ fun Burn_screen(navController: NavController){
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // "NE YAPILMALI?" Bölümü
-            InstructionSection(
-                title = "NE YAPILMALI?",
-                backgroundColor = Color(0xFF4CAF50),
-                instructions = listOf(
-                    "Soğutun: Yanan bölgeyi en az 15-20 dakika boyunca ağrıyı azaltacak kadar soğuk (buzlu olmayan) akan suyun altında tutun.",
+            item {
+                InstructionSection(
+                    title = "NE YAPILMALI?",
+                    backgroundColor = Color(0xFF4CAF50),
+                    instructions = listOf(
+                        "Soğutun: Yanan bölgeyi en az 15-20 dakika boyunca ağrıyı azaltacak kadar soğuk (buzlu olmayan) akan suyun altında tutun.",
 
-                    "Takıları Çıkarın: Bölge şişmeden önce yüzük, bilezik, saat gibi takıları çıkarın.",
+                        "Takıları Çıkarın: Bölge şişmeden önce yüzük, bilezik, saat gibi takıları çıkarın.",
 
-                    "Temiz Bir Bezle Kapatın: Yanan bölgenin üzerini temiz ve tüy bırakmayan nemli bir bezle veya streç film ile gevşekçe kapatın.",
+                        "Temiz Bir Bezle Kapatın: Yanan bölgenin üzerini temiz ve tüy bırakmayan nemli bir bezle veya streç film ile gevşekçe kapatın.",
 
-                    "Şoka Karşı Önlem Alın: Yanık geniş bir alandaysa, yaralının üzerini örterek vücut ısısını koruyun."
-                ),
-                isPositive = true
-            )
+                        "Şoka Karşı Önlem Alın: Yanık geniş bir alandaysa, yaralının üzerini örterek vücut ısısını koruyun."
+                    ),
+                    isPositive = true
+                )
+            }
 
+            item {
+                InstructionSection(
+                    title = "NELERDEN KAÇINILMALI?",
+                    backgroundColor = Color(0xFFF44336),
+                    instructions = listOf(
+                        "Yanığın üzerine diş macunu, yoğurt, salça, zeytinyağı gibi maddeler sürmeyin.",
 
-            InstructionSection(
-                title = "NELERDEN KAÇINILMALI?",
-                backgroundColor = Color(0xFFF44336),
-                instructions = listOf(
-                    "Yanığın üzerine diş macunu, yoğurt, salça, zeytinyağı gibi maddeler sürmeyin.",
+                        "Oluşan su kabarcıklarını (bülleri) patlatmayın.",
 
-                    "Oluşan su kabarcıklarını (bülleri) patlatmayın.",
+                        "Yanıcının üzerine yapışmış giysileri çekerek çıkarmaya çalışmayın.",
 
-                    "Yanıcının üzerine yapışmış giysileri çekerek çıkarmaya çalışmayın.",
+                        "Buz veya buzlu su kullanmayın, bu daha fazla doku hasarına yol açabilir."
 
-                    "Buz veya buzlu su kullanmayın, bu daha fazla doku hasarına yol açabilir."
-
-                ),
-                isPositive = false
-            )
+                    ),
+                    isPositive = false
+                )
+            }
         }
     }
 }

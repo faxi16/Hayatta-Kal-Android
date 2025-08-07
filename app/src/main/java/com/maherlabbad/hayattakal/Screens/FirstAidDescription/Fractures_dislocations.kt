@@ -2,6 +2,7 @@ package com.maherlabbad.hayattakal.Screens.FirstAidDescription
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -40,37 +41,38 @@ fun FracturesDislocations(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp) // Ekranın geneline boşluk ver
+                .padding(16.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(20.dp) // Bölümler arasına boşluk koy
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // "NE YAPILMALI?" Bölümü
-            InstructionSection(
-                title = "NE YAPILMALI?",
-                backgroundColor = Color(0xFF4CAF50), // Yeşil
-                instructions = listOf(
-                    "Hareket Ettirme: Kırık şüphesi olan bölgeyi ve yaralıyı kesinlikle oynatma.",
-                    "Sabitle (Tespit Et): Kırık bölgeyi, alt ve üst eklemleri de içine alacak şekilde sert bir cisimle (atel) hareketsiz hale getir. ",
-                    "Açık Kırığı Kapat: Kırık kemik dışarı çıktıysa, üzerini temiz bir bezle ört. Asla içeri itme.",
-                    "Buz Uygula: Şişliği azaltmak için bölgeye bir beze sarılı buz torbasıyla kompres yap."
-                ),
-                isPositive = true
-            )
-
-            // "NELERDEN KAÇINILMALI?" Bölümü
-            InstructionSection(
-                title = "NELERDEN KAÇINILMALI?",
-                backgroundColor = Color(0xFFF44336), // Kırmızı
-                instructions = listOf(
-                    "Düzeltmeye Çalışma: Kırığı veya çıkığı asla yerine oturtmaya çalışma.",
-                    "İlaç Verme: Doktor onayı olmadan ağrı kesici dahil hiçbir ilaç verme.",
-                    "Masaj Yapma: Kırık bölgeye kesinlikle masaj yapma."
-                ),
-                isPositive = false
-            )
+            item {
+                InstructionSection(
+                    title = "NE YAPILMALI?",
+                    backgroundColor = Color(0xFF4CAF50), // Green
+                    instructions = listOf(
+                        "Hareket Ettirme: Kırık şüphesi olan bölgeyi ve yaralıyı kesinlikle oynatma.",
+                        "Sabitle (Tespit Et): Kırık bölgeyi, alt ve üst eklemleri de içine alacak şekilde sert bir cisimle (atel) hareketsiz hale getir. ",
+                        "Açık Kırığı Kapat: Kırık kemik dışarı çıktıysa, üzerini temiz bir bezle ört. Asla içeri itme.",
+                        "Buz Uygula: Şişliği azaltmak için bölgeye bir beze sarılı buz torbasıyla kompres yap."
+                    ),
+                    isPositive = true
+                )
+            }
+            item {
+                InstructionSection(
+                    title = "NELERDEN KAÇINILMALI?",
+                    backgroundColor = Color(0xFFF44336), // Red
+                    instructions = listOf(
+                        "Düzeltmeye Çalışma: Kırığı veya çıkığı asla yerine oturtmaya çalışma.",
+                        "İlaç Verme: Doktor onayı olmadan ağrı kesici dahil hiçbir ilaç verme.",
+                        "Masaj Yapma: Kırık bölgeye kesinlikle masaj yapma."
+                    ),
+                    isPositive = false
+                )
+            }
         }
     }
 }

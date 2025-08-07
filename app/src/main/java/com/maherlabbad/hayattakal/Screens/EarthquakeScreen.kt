@@ -1,6 +1,8 @@
 package com.maherlabbad.hayattakal.Screens
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,9 +41,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.maherlabbad.hayattakal.model.EarthquakeModel
 import com.maherlabbad.hayattakal.viewmodel.EarthquakeViewModel
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +57,6 @@ fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel,navController: N
     val currentSource by Earthquakeviewmodel.dataSource.collectAsState()
     val isLoading by Earthquakeviewmodel.isLoading.collectAsState()
     val context = LocalContext.current
-
 
     Scaffold(
         topBar = {
@@ -100,7 +106,7 @@ fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel,navController: N
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(items = earthquakes, key = { it.eventId }) { earthquake ->
-                    EarthquakeRow(Earthquake = earthquake)
+                    EarthquakeRow(Earthquake = earthquake,CurrentSource = currentSource)
                 }
             }
 
@@ -110,7 +116,7 @@ fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel,navController: N
 }
 
 @Composable
-fun EarthquakeRow(Earthquake: EarthquakeModel){
+fun EarthquakeRow(Earthquake: EarthquakeModel,CurrentSource : String){
 
     val Magnitude = Earthquake.magnitude.toDouble()
     var color = Color.Black
@@ -133,7 +139,11 @@ fun EarthquakeRow(Earthquake: EarthquakeModel){
             Column(modifier = Modifier.weight(1f)) {
 
                 Text(Earthquake.location)
-                Text(Earthquake.date)
+                if(CurrentSource == "AFAD"){
+                    Text(convertUtcToTurkeyTime(Earthquake.date))
+                }else{
+                    Text(Earthquake.date)
+                }
             }
 
             Text(Earthquake.magnitude, color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.headlineMedium)
@@ -151,4 +161,14 @@ fun getStartAndEndDatesForLast24Hours(): Pair<String, String> {
     val startDate = dateFormat.format(calendar.time)
 
     return Pair(startDate, endDate)
+}
+
+fun convertUtcToTurkeyTime(utcTimeString: String): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    val utcDateTime = LocalDateTime.parse(utcTimeString, formatter)
+
+    val utcZoned = ZonedDateTime.of(utcDateTime, ZoneId.of("UTC"))
+    val turkeyZoned = utcZoned.withZoneSameInstant(ZoneId.of("Europe/Istanbul"))
+
+    return turkeyZoned.format(formatter)
 }

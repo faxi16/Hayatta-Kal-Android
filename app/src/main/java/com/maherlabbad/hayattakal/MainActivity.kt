@@ -49,6 +49,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.maherlabbad.hayattakal.Screens.Earthquake_screen
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Bleeding_screen
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Burn_screen
@@ -77,6 +78,7 @@ class MainActivity : ComponentActivity() {
     private val earthquakeViewModel : EarthquakeViewModel by viewModels<EarthquakeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,41 +40,43 @@ fun Bleeding_screen(navController: NavController){
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // "NE YAPILMALI?" Bölümü
-            InstructionSection(
-                title = "NE YAPILMALI?",
-                backgroundColor = Color(0xFF4CAF50),
-                instructions = listOf(
-                    "Doğrudan Baskı Uygula: Temiz bir bezle kanayan yere sıkıca bastır.",
-                    "Bezi Kaldırma: Kanla dolsa bile ilk bezi kaldırma, üzerine yenisini ekle.",
+            item {
+                InstructionSection(
+                    title = "NE YAPILMALI?",
+                    backgroundColor = Color(0xFF4CAF50),
+                    instructions = listOf(
+                        "Doğrudan Baskı Uygula: Temiz bir bezle kanayan yere sıkıca bastır.",
+                        "Bezi Kaldırma: Kanla dolsa bile ilk bezi kaldırma, üzerine yenisini ekle.",
 
-                    "Yüksekte Tut: Kırık yoksa kanayan kolu veya bacağı kalp seviyesinden yukarı kaldır.",
+                        "Yüksekte Tut: Kırık yoksa kanayan kolu veya bacağı kalp seviyesinden yukarı kaldır.",
 
-                    "Şok Pozisyonu Ver: Yaralıyı sırt üstü yatır, bacaklarını 30 cm yükselt ve üzerini ört.",
+                        "Şok Pozisyonu Ver: Yaralıyı sırt üstü yatır, bacaklarını 30 cm yükselt ve üzerini ört.",
 
-                    "Turnike Uygula (Son Çare): Sadece durdurulamayan ve hayatı tehdit eden kanamalarda, eğitimliysen uygula."
-                ),
-                isPositive = true
-            )
+                        "Turnike Uygula (Son Çare): Sadece durdurulamayan ve hayatı tehdit eden kanamalarda, eğitimliysen uygula."
+                    ),
+                    isPositive = true
+                )
+            }
 
-
-            InstructionSection(
-                title = "NELERDEN KAÇINILMALI?",
-                backgroundColor = Color(0xFFF44336),
-                instructions = listOf(
-                    "Yaranın içindeki cisimleri çıkarmayın",
-                    "Kanla ıslanan ilk bezi kaldırmayın",
-                    "Turnikeyi son çare olmadan uygulamayın"
-                ),
-                isPositive = false
-            )
+            item {
+                InstructionSection(
+                    title = "NELERDEN KAÇINILMALI?",
+                    backgroundColor = Color(0xFFF44336),
+                    instructions = listOf(
+                        "Yaranın içindeki cisimleri çıkarmayın",
+                        "Kanla ıslanan ilk bezi kaldırmayın",
+                        "Turnikeyi son çare olmadan uygulamayın"
+                    ),
+                    isPositive = false
+                )
+            }
         }
     }
 }

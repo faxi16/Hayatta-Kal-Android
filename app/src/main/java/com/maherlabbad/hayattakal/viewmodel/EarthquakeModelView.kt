@@ -1,7 +1,9 @@
 package com.maherlabbad.hayattakal.viewmodel
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.maherlabbad.hayattakal.Screens.getStartAndEndDatesForLast24Hours
@@ -14,6 +16,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class EarthquakeViewModel(application: Application) : AndroidViewModel(application) {
     private val BASE_URL = "https://deprem.afad.gov.tr/"

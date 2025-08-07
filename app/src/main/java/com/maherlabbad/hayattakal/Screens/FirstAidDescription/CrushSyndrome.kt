@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,36 +40,38 @@ fun Crush_Syndrome_screen(navController: NavController){
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // "NE YAPILMALI?" Bölümü
-            InstructionSection(
-                title = "NE YAPILMALI?",
-                backgroundColor = Color(0xFF4CAF50),
-                instructions = listOf(
-                    "Profesyonel Yardım Bekleyin: Yaralıyı sıkıştığı yerden sadece eğitimli kurtarma ekipleri (AFAD, UMKE, İtfaiye) çıkarmalıdır.",
-                    "Bilincini Açık Tutun: Yaralıyla sürekli konuşarak bilincini açık tutmaya ve moral vermeye çalışın.",
-                    "Görünen Kanamaları Durdurun: Eğer yaralının ulaşabildiğiniz bir yerinde aktif kanama varsa, üzerine temiz bir bezle baskı uygulayın."
-                ),
-                isPositive = true
-            )
+            item {
+                InstructionSection(
+                    title = "NE YAPILMALI?",
+                    backgroundColor = Color(0xFF4CAF50),
+                    instructions = listOf(
+                        "Profesyonel Yardım Bekleyin: Yaralıyı sıkıştığı yerden sadece eğitimli kurtarma ekipleri (AFAD, UMKE, İtfaiye) çıkarmalıdır.",
+                        "Bilincini Açık Tutun: Yaralıyla sürekli konuşarak bilincini açık tutmaya ve moral vermeye çalışın.",
+                        "Görünen Kanamaları Durdurun: Eğer yaralının ulaşabildiğiniz bir yerinde aktif kanama varsa, üzerine temiz bir bezle baskı uygulayın."
+                    ),
+                    isPositive = true
+                )
+            }
 
+            item {
+                InstructionSection(
+                    title = "NELERDEN KAÇINILMALI?",
+                    backgroundColor = Color(0xFFF44336),
+                    instructions = listOf(
+                        "AĞIRLIĞI ANİDEN KALDIRMAYIN: Uzun süre baskı altında kalmış kaslardan kana bir anda zehirli maddeler karışır. Bu, ani kalp durmasına ve böbrek yetmezliğine yol açabilir. Bu yüzden kurtarma işlemini profesyonellere bırakın.",
 
-            InstructionSection(
-                title = "NELERDEN KAÇINILMALI?",
-                backgroundColor = Color(0xFFF44336),
-                instructions = listOf(
-                    "AĞIRLIĞI ANİDEN KALDIRMAYIN: Uzun süre baskı altında kalmış kaslardan kana bir anda zehirli maddeler karışır. Bu, ani kalp durmasına ve böbrek yetmezliğine yol açabilir. Bu yüzden kurtarma işlemini profesyonellere bırakın.",
-
-                    "HEMEN SU VERMEYİN: Kurtarıldıktan hemen sonra yaralıya su içirmek, böbreklerin iflas etmesine neden olabilir. Sıvı takviyesi sadece damar yoluyla ve sağlık ekipleri tarafından yapılmalıdır."
-                ),
-                isPositive = false
-            )
+                        "HEMEN SU VERMEYİN: Kurtarıldıktan hemen sonra yaralıya su içirmek, böbreklerin iflas etmesine neden olabilir. Sıvı takviyesi sadece damar yoluyla ve sağlık ekipleri tarafından yapılmalıdır."
+                    ),
+                    isPositive = false
+                )
+            }
         }
     }
 }
