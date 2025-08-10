@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,34 +53,45 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.maherlabbad.hayattakal.location
 import com.maherlabbad.hayattakal.model.Relative_model
+import com.maherlabbad.hayattakal.service.QuakeService
 import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
 
-@SuppressLint("MissingPermission")
+@SuppressLint("MissingPermission", "PermissionLaunchedDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(navController: NavController,relativeModelviewmodel: RelativeModelviewmodel) {
     val context = LocalContext.current
 
-    val fusedLocationClient = remember {
-        LocationServices.getFusedLocationProviderClient(context)
-    }
+    val fusedLocationClient = location.getInstance(context)
 
     val multiplePermissionsState = rememberMultiplePermissionsState(permissions =
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.READ_CONTACTS,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.POST_NOTIFICATIONS
         ))
+
 
     LaunchedEffect(Unit) {
         if (multiplePermissionsState.allPermissionsGranted) {
+
             relativeModelviewmodel.startLocationUpdates(fusedLocationClient = fusedLocationClient)
         }else {
             multiplePermissionsState.launchMultiplePermissionRequest()
         }
     }
-    var location = relativeModelviewmodel.latlng.value
+
+    LaunchedEffect(Unit) {
+        if(multiplePermissionsState.allPermissionsGranted){
+            val serviceIntent = Intent(context, QuakeService::class.java)
+            ContextCompat.startForegroundService(context, serviceIntent)
+        }
+    }
+    val location = relativeModelviewmodel.latlng.value
     Scaffold(floatingActionButton = {
         val contacts = relativeModelviewmodel.itemList.value
         FABEmergency(contacts = contacts,location.latitude,location.longitude)

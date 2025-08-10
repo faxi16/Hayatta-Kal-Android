@@ -5,11 +5,9 @@ import android.app.Application
 import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -23,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class RelativeModelviewmodel(application: Application) : AndroidViewModel(application) {
-    private val db = Room.databaseBuilder(getApplication(), Model_Database::class.java,"Models").build()
+    private val db = Model_Database.getDatabase(getApplication())
 
     private val ModelDao = db.userDao();
 

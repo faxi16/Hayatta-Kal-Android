@@ -105,7 +105,7 @@ fun Earthquake_screen(Earthquakeviewmodel : EarthquakeViewModel,navController: N
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(items = earthquakes, key = { it.eventId }) { earthquake ->
+                items(items = earthquakes) { earthquake ->
                     EarthquakeRow(Earthquake = earthquake,CurrentSource = currentSource, navController = navController)
                 }
             }

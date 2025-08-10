@@ -12,6 +12,9 @@ interface Relative_Model_Dao {
     @Query("SELECT * FROM Relative_model")
     fun getItemWithNameAndId() : List<Relative_model>
 
+    @Query("SELECT Phone_number FROM Relative_model")
+    fun getAllPhones() : List<String>
+
     @Query("SELECT * FROM Relative_model WHERE Phone_number = :phoneNumber")
     fun Contains(phoneNumber: String): Relative_model?
 

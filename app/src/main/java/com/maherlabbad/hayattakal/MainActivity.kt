@@ -1,6 +1,8 @@
 package com.maherlabbad.hayattakal
 
+import android.Manifest
 import android.app.Application
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -31,8 +33,12 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
@@ -46,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -53,6 +60,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.gson.Gson
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.maherlabbad.hayattakal.Screens.DisasterBagScreen
@@ -71,6 +82,7 @@ import com.maherlabbad.hayattakal.db.Model_Database
 import com.maherlabbad.hayattakal.model.EarthquakeModel
 import com.maherlabbad.hayattakal.model.KandilliEarthquake
 import com.maherlabbad.hayattakal.model.Relative_model
+import com.maherlabbad.hayattakal.service.QuakeService
 
 import com.maherlabbad.hayattakal.ui.theme.HayattaKalTheme
 import com.maherlabbad.hayattakal.viewmodel.EarthquakeViewModel
@@ -135,10 +147,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+
+
+
     }
 }
-
-
 
 
 
