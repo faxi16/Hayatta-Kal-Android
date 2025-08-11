@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Menu
@@ -29,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -147,6 +149,13 @@ fun MainScreen(navController: NavController,relativeModelviewmodel: RelativeMode
                     icon = Icons.Rounded.Search,
                     text = "Anlık Deprem Takibi",
                     onClick = { navController.navigate("Earthquake_Screen") }
+                )
+            }
+            item {
+                FeatureCard(
+                    icon = Icons.Rounded.Search,
+                    text = "Haberler",
+                    onClick = { navController.navigate("NewsScreen") }
                 )
             }
         }

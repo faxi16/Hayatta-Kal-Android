@@ -1,6 +1,7 @@
 package com.maherlabbad.hayattakal
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
@@ -45,7 +46,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 
@@ -60,6 +63,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -77,15 +81,18 @@ import com.maherlabbad.hayattakal.Screens.FirstAidScreen
 
 import com.maherlabbad.hayattakal.Screens.MainScreen
 import com.maherlabbad.hayattakal.Screens.MapScreen
+import com.maherlabbad.hayattakal.Screens.NewsScreen
 import com.maherlabbad.hayattakal.Screens.Notify_Relatives_Screen
 import com.maherlabbad.hayattakal.db.Model_Database
 import com.maherlabbad.hayattakal.model.EarthquakeModel
 import com.maherlabbad.hayattakal.model.KandilliEarthquake
+import com.maherlabbad.hayattakal.model.NewsItem
 import com.maherlabbad.hayattakal.model.Relative_model
 import com.maherlabbad.hayattakal.service.QuakeService
 
 import com.maherlabbad.hayattakal.ui.theme.HayattaKalTheme
 import com.maherlabbad.hayattakal.viewmodel.EarthquakeViewModel
+import com.maherlabbad.hayattakal.viewmodel.NewsViewModel
 import com.maherlabbad.hayattakal.viewmodel.RelativeModelviewmodel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -94,13 +101,14 @@ import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
     private val relativeModelviewmodel : RelativeModelviewmodel by viewModels<RelativeModelviewmodel>()
-
+    private val newsViewModel : NewsViewModel by viewModels<NewsViewModel>()
     private val earthquakeViewModel : EarthquakeViewModel by viewModels<EarthquakeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(this)
         enableEdgeToEdge()
         setContent {
+
             val navController = rememberNavController()
             HayattaKalTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -142,15 +150,14 @@ class MainActivity : ComponentActivity() {
                                 val relative = Gson().fromJson(json, EarthquakeModel::class.java)
                                 MapScreen(relative,navController)
                             }
+                            composable("NewsScreen") {
+                                NewsScreen(newsViewModel,navController)
+                            }
                         }
                     }
                 }
             }
         }
-
-
-
-
     }
 }
 
@@ -162,5 +169,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     HayattaKalTheme {
+
     }
 }

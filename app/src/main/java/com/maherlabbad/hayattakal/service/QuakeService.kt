@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
@@ -58,7 +59,6 @@ class QuakeService : Service() {
 
     private fun startChecking() {
         scope.launch {
-            Log.d("QuakeService", "Servis başladı")
             while (isActive) {
                 try {
                     checkEarthquakes()
@@ -72,7 +72,6 @@ class QuakeService : Service() {
 
     private suspend fun checkEarthquakes() {
         val earthquakes = earthquakeRepository.getAllEarthquakes()
-
         earthquakes.forEach { quake ->
 
             val inserted = earthquakeRepository.insertEarthquake(quake)
@@ -122,6 +121,12 @@ class QuakeService : Service() {
         }
     }
     fun playAlarmSound(context: Context) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.setStreamVolume(
+            AudioManager.STREAM_ALARM,
+            audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM),
+            0
+        )
         val alarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val ringtone: Ringtone = RingtoneManager.getRingtone(context, alarmUri)

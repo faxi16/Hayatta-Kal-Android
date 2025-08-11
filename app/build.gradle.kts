@@ -61,8 +61,9 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:2.11.4")
     implementation("com.google.android.gms:play-services-maps:19.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
-
+    implementation("com.squareup.retrofit2:converter-scalars:3.0.0")
     implementation("com.google.accompanist:accompanist-permissions:0.37.3")
+    implementation("org.jsoup:jsoup:1.21.1")
     val room_version = "2.7.2"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
