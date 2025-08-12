@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface EarthquakeApi {
-    @GET("apiv2/event/filter?limit=100&orderby=timedesc&format=json")
+    @GET("apiv2/event/filter?orderby=timedesc&format=json")
     suspend fun getLatestEarthquakes(
         @Query("start") startDate: String,
         @Query("end") endDate: String

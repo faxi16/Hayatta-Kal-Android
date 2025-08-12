@@ -3,6 +3,8 @@ package com.maherlabbad.hayattakal.Screens
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,23 +33,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.size.Scale
 import com.maherlabbad.hayattakal.R
 import com.maherlabbad.hayattakal.model.NewsItem
 import com.maherlabbad.hayattakal.viewmodel.NewsViewModel
+import kotlinx.coroutines.Dispatchers
+import okhttp3.OkHttpClient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsScreen(newsViewModel: NewsViewModel,navController: NavController){
+
     LaunchedEffect(Unit) {
         newsViewModel.getLatestNews()
+
     }
     val news = newsViewModel.newsItems.value
 
@@ -95,7 +108,6 @@ fun NewsScreen(newsViewModel: NewsViewModel,navController: NavController){
             items(news.size){ item ->
                 NewsCard(newsItem = news[item])
             }
-
         }
     }
 }
@@ -105,10 +117,16 @@ fun NewsScreen(newsViewModel: NewsViewModel,navController: NavController){
 @Composable
 fun NewsCard(newsItem: NewsItem) {
     val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = {context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(newsItem.link)))}),
+            .clickable(onClick = {
+
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsItem.link))
+                context.startActivity(intent)
+
+            }),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -116,7 +134,11 @@ fun NewsCard(newsItem: NewsItem) {
         Column {
 
             AsyncImage(
-                model = newsItem.image,
+                model = ImageRequest.Builder(context)
+                    .data(newsItem.image)
+                    .dispatcher(Dispatchers.IO)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = newsItem.title,
                 placeholder = painterResource(id = R.drawable.loading),
                 error = painterResource(id = R.drawable.error),

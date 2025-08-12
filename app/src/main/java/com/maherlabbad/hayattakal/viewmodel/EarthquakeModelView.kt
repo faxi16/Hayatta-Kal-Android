@@ -76,7 +76,6 @@ class EarthquakeViewModel(application: Application) : AndroidViewModel(applicati
 
     private suspend fun fetchAfadData(): List<EarthquakeModel> {
         val (startDate, endDate) = getStartAndEndDatesForLast24Hours()
-
         return retrofit.getLatestEarthquakes(startDate, endDate)
     }
 

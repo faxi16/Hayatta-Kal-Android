@@ -1,7 +1,9 @@
 package com.maherlabbad.hayattakal.viewmodel
 
+import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.maherlabbad.hayattakal.model.NewsItem
 import com.maherlabbad.hayattakal.service.NewsCnnTurkApi
@@ -11,18 +13,21 @@ import com.maherlabbad.hayattakal.service.NewsSozcuApi
 import com.maherlabbad.hayattakal.service.NewsTurkiyeGazApi
 import com.maherlabbad.hayattakal.service.NewshaberTurkApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.ConnectionSpec
+import okhttp3.OkHttpClient
+import okhttp3.TlsVersion
 import retrofit2.Retrofit
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.util.concurrent.TimeUnit
 
-class NewsViewModel : ViewModel() {
+class NewsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val BASE_URL_SOZCU = "https://www.sozcu.com.tr/"
     private val BASE_URL_HABERTURK = "https://www.haberturk.com/"
@@ -30,56 +35,79 @@ class NewsViewModel : ViewModel() {
     private val BASE_URL_CNNTURK = "https://www.cnnturk.com/"
     private val BASE_URL_HURRIYET = "https://www.hurriyet.com.tr/"
     private val BASER_URL_MILLIYET = "https://www.milliyet.com.tr/"
+    val modernTlsSpec = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+        .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2)
+        .build()
+
+    val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .connectionSpecs(listOf(modernTlsSpec, ConnectionSpec.CLEARTEXT))
+        .build()
     private val retrofitCnnTurk = Retrofit.Builder()
         .baseUrl(BASE_URL_CNNTURK)
+        .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(NewsCnnTurkApi::class.java)
     private val retrofitHaberturk = Retrofit.Builder()
         .baseUrl(BASE_URL_HABERTURK)
+        .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(NewshaberTurkApi::class.java)
 
     private val retrofitSozcu = Retrofit.Builder()
         .baseUrl(BASE_URL_SOZCU)
+        .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(NewsSozcuApi::class.java)
 
     private val retrofitTurkiyeGaz = Retrofit.Builder()
         .baseUrl(BASE_URL_TURKIYEGAZ)
+        .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(NewsTurkiyeGazApi::class.java)
 
     private val retrofitMilliyet = Retrofit.Builder()
         .baseUrl(BASER_URL_MILLIYET)
+        .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(NewsMilliyettApi::class.java)
 
     private val retrofitHurriyet = Retrofit.Builder()
         .baseUrl(BASE_URL_HURRIYET)
+        .client(okHttpClient)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(NewsHurriyetApi::class.java)
     val newsItems = mutableStateOf<List<NewsItem>>(listOf())
 
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getLatestNews() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = retrofitCnnTurk.getLatestNewsCnnTurk()
-                val responseHurriyet = retrofitHurriyet.getLatestNewsHurriyet()
-                val responseMilliyet = retrofitMilliyet.getLatestNewsMilliyet()
-                val responseTurkiyeGaz = retrofitTurkiyeGaz.getLatestNewsTurkiyeGaz()
-                val responseSozcu = retrofitSozcu.getLatestNewsSozcu()
-                val responseHaberturk = retrofitHaberturk.getLatestNewsHaberturk()
-                val list = listOf(response, responseHurriyet, responseMilliyet, responseTurkiyeGaz, responseSozcu, responseHaberturk)
-                newsItems.value = parseRss(list)
+
+                val response = async { retrofitCnnTurk.getLatestNewsCnnTurk() }
+                val responseHurriyet = async { retrofitHurriyet.getLatestNewsHurriyet()}
+                val responseMilliyet = async{ retrofitMilliyet.getLatestNewsMilliyet()}
+                val responseTurkiyeGaz = async{retrofitTurkiyeGaz.getLatestNewsTurkiyeGaz()}
+                val responseSozcu = async{ retrofitSozcu.getLatestNewsSozcu()}
+                val responseHaberturk =async{ retrofitHaberturk.getLatestNewsHaberturk()}
+
+                val rssXmls = awaitAll(response, responseHurriyet, responseMilliyet, responseTurkiyeGaz, responseSozcu, responseHaberturk)
+
+                val news = parseRss(rssXmls)
+
+                withContext(Dispatchers.Main){
+                    newsItems.value = news
+                }
 
             } catch (e: Exception) {
+                Log.w("NewsViewModel", "Error fetching news: ${e.message}")
                 e.printStackTrace()
             }
         }

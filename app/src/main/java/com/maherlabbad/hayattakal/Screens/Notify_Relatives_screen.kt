@@ -71,8 +71,6 @@ fun Notify_Relatives_Screen(Relative_Model_viewmodel: RelativeModelviewmodel,nav
         Relative_Model_viewmodel.getItemList()
     }
     val contacts = Relative_Model_viewmodel.itemList.value
-
-
     val contactPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickContact()
     ) { uri ->
@@ -169,6 +167,7 @@ fun FAB(contactpickerLauncher : ActivityResultLauncher<Void?>){
 fun Relative_Row(relativeModel: Relative_model,Relative_Model_viewmodel: RelativeModelviewmodel){
     val context = LocalContext.current
     val location = Relative_Model_viewmodel.latlng.value
+    println(location.toString())
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
         Row {
             Column(modifier = Modifier.weight(1f).padding(8.dp), verticalArrangement = Arrangement.Center) {
