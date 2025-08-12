@@ -17,6 +17,7 @@ import android.telephony.SmsManager
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.maherlabbad.hayattakal.SettingsManager
 import com.maherlabbad.hayattakal.db.EarthquakeDatabase
 import com.maherlabbad.hayattakal.db.Model_Database
 import com.maherlabbad.hayattakal.model.EarthquakeModel
@@ -36,18 +37,20 @@ class QuakeService : Service() {
 
     private lateinit var db : EarthquakeDatabase
 
+    private lateinit var settingsManager: SettingsManager
+
     private lateinit var relativeRepository: RelativeRepository
 
     private lateinit var db_relative : Model_Database
 
     override fun onCreate() {
-
         super.onCreate()
+
+        settingsManager = SettingsManager(this)
         db = EarthquakeDatabase.getDatabase(applicationContext)
         db_relative = Model_Database.getDatabase(applicationContext)
         earthquakeRepository = EarthquakeRepository(db.earthquakeDao())
         relativeRepository = RelativeRepository(db_relative.userDao(), context = applicationContext)
-
 
         NotificationHelper.createChannels(this)
         startForeground(
@@ -75,11 +78,12 @@ class QuakeService : Service() {
         earthquakes.forEach { quake ->
 
             val inserted = earthquakeRepository.insertEarthquake(quake)
-
-            if (inserted && quake.magnitude.toDouble() >= 4.5 && !quake.check) {
-                quake.check = true
-                sendNotification(quake)
-                if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if (inserted) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
                     val location = relativeRepository.getLocation()
                     val results = FloatArray(1)
                     Location.distanceBetween(
@@ -88,9 +92,15 @@ class QuakeService : Service() {
                         results
                     )
                     val distanceInKm = results[0] / 1000
-
-                    if (distanceInKm <= 100) {
-                        sendSmsToContacts(quake)
+                    if (quake.magnitude.toFloat() >= settingsManager.getFloat("min_magnitude_for_notification_in_distance", 4.5f) && distanceInKm <= settingsManager.getInt("max_distance_in_kilometers", 100) && !quake.check) {
+                        quake.check = true
+                        sendNotification(quake)
+                        if (quake.magnitude.toFloat() >= settingsManager.getFloat("min_magnitude_for_sms",4.5f)) {
+                            sendSmsToContacts(quake)
+                        }
+                    }else if(!quake.check && quake.magnitude.toFloat() >= settingsManager.getFloat("min_magnitude_for_notification",4.0f)) {
+                        quake.check = true
+                        sendNotification(quake)
                     }
                 }
             }

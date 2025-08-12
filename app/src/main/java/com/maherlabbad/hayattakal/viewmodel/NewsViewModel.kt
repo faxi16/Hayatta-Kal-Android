@@ -1,10 +1,12 @@
 package com.maherlabbad.hayattakal.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.maherlabbad.hayattakal.R
 import com.maherlabbad.hayattakal.model.NewsItem
 import com.maherlabbad.hayattakal.service.NewsCnnTurkApi
 import com.maherlabbad.hayattakal.service.NewsHurriyetApi
@@ -25,7 +27,13 @@ import retrofit2.Retrofit
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.CertificateFactory
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class NewsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -39,11 +47,60 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
         .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2)
         .build()
 
-    val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .connectionSpecs(listOf(modernTlsSpec, ConnectionSpec.CLEARTEXT))
-        .build()
+    fun getSecureOkHttpClientMultipleCerts(context: Context): OkHttpClient {
+        val cf = CertificateFactory.getInstance("X.509")
+
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+
+
+        val caInput1 = context.resources.openRawResource(R.raw.cnnturk_cert)
+        val ca1 = cf.generateCertificate(caInput1)
+        caInput1.close()
+        keyStore.setCertificateEntry("cnnturk", ca1)
+
+
+        val caInput2 = context.resources.openRawResource(R.raw.sozcu_cert)
+        val ca2 = cf.generateCertificate(caInput2)
+        caInput2.close()
+        keyStore.setCertificateEntry("sozcu", ca2)
+
+
+        val caInput3 = context.resources.openRawResource(R.raw.haberturk_cert)
+        val ca3 = cf.generateCertificate(caInput3)
+        caInput3.close()
+        keyStore.setCertificateEntry("haberturk", ca3)
+
+        val caInput4 = context.resources.openRawResource(R.raw.hurriyet_)
+        val ca4 = cf.generateCertificate(caInput4)
+        caInput4.close()
+        keyStore.setCertificateEntry("hurriyet", ca4)
+
+        val caInput5 = context.resources.openRawResource(R.raw.milliyet_cert)
+        val ca5 = cf.generateCertificate(caInput5)
+        caInput5.close()
+        keyStore.setCertificateEntry("milliyet", ca5)
+
+        val caInput6 = context.resources.openRawResource(R.raw.turkiyegazetesi_cert)
+        val ca6 = cf.generateCertificate(caInput6)
+        caInput6.close()
+        keyStore.setCertificateEntry("turkiyegazetesi", ca6)
+
+        val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        tmf.init(keyStore)
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, tmf.trustManagers, SecureRandom())
+
+        return OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, tmf.trustManagers[0] as X509TrustManager)
+            .build()
+    }
+
+
+
+    val okHttpClient = getSecureOkHttpClientMultipleCerts(application)
+
     private val retrofitCnnTurk = Retrofit.Builder()
         .baseUrl(BASE_URL_CNNTURK)
         .client(okHttpClient)

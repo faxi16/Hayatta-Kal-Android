@@ -110,7 +110,15 @@ fun MainScreen(navController: NavController,relativeModelviewmodel: RelativeMode
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                ),
+                actions = {
+                    IconButton(onClick = { navController.navigate("SettingsScreen") }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Ayarlar"
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->

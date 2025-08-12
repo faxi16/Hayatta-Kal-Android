@@ -1,5 +1,6 @@
 package com.maherlabbad.hayattakal
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,10 +8,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +32,7 @@ import com.google.gson.Gson
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.maherlabbad.hayattakal.Screens.DisasterBagScreen
 import com.maherlabbad.hayattakal.Screens.Earthquake_screen
+import com.maherlabbad.hayattakal.Screens.FABEmergency
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Bleeding_screen
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Burn_screen
 import com.maherlabbad.hayattakal.Screens.FirstAidDescription.Crush_Syndrome_screen
@@ -30,6 +42,7 @@ import com.maherlabbad.hayattakal.Screens.MainScreen
 import com.maherlabbad.hayattakal.Screens.MapScreen
 import com.maherlabbad.hayattakal.Screens.NewsScreen
 import com.maherlabbad.hayattakal.Screens.Notify_Relatives_Screen
+import com.maherlabbad.hayattakal.Screens.SettingsAndAboutScreen
 import com.maherlabbad.hayattakal.model.EarthquakeModel
 import com.maherlabbad.hayattakal.ui.theme.HayattaKalTheme
 import com.maherlabbad.hayattakal.viewmodel.EarthquakeViewModel
@@ -48,7 +61,7 @@ class MainActivity : ComponentActivity() {
         AndroidThreeTen.init(this)
         enableEdgeToEdge()
         setContent {
-
+            val context = LocalContext.current
             val navController = rememberNavController()
             HayattaKalTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -93,20 +106,13 @@ class MainActivity : ComponentActivity() {
                             composable("NewsScreen") {
                                 NewsScreen(newsViewModel,navController)
                             }
+                            composable("SettingsScreen") {
+                                SettingsAndAboutScreen(context)
+                            }
                         }
                     }
                 }
             }
         }
-    }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    HayattaKalTheme {
-
     }
 }
