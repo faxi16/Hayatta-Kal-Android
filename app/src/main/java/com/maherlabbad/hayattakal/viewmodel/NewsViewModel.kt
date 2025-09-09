@@ -1,12 +1,10 @@
 package com.maherlabbad.hayattakal.viewmodel
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.maherlabbad.hayattakal.R
 import com.maherlabbad.hayattakal.model.NewsItem
 import com.maherlabbad.hayattakal.service.NewsCnnTurkApi
 import com.maherlabbad.hayattakal.service.NewsHurriyetApi
@@ -20,20 +18,12 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
-import okhttp3.TlsVersion
-import retrofit2.Retrofit
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
+import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.security.KeyStore
-import java.security.SecureRandom
-import java.security.cert.CertificateFactory
 import java.util.concurrent.TimeUnit
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509TrustManager
 
 class NewsViewModel(application: Application) : AndroidViewModel(application) {
 
