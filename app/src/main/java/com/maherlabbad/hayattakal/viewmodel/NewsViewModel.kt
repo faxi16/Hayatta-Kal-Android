@@ -43,63 +43,12 @@ class NewsViewModel(application: Application) : AndroidViewModel(application) {
     private val BASE_URL_CNNTURK = "https://www.cnnturk.com/"
     private val BASE_URL_HURRIYET = "https://www.hurriyet.com.tr/"
     private val BASER_URL_MILLIYET = "https://www.milliyet.com.tr/"
-    val modernTlsSpec = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-        .tlsVersions(TlsVersion.TLS_1_3, TlsVersion.TLS_1_2)
+
+
+    val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
         .build()
-
-    fun getSecureOkHttpClientMultipleCerts(context: Context): OkHttpClient {
-        val cf = CertificateFactory.getInstance("X.509")
-
-        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-        keyStore.load(null, null)
-
-
-        val caInput1 = context.resources.openRawResource(R.raw.cnnturk_cert)
-        val ca1 = cf.generateCertificate(caInput1)
-        caInput1.close()
-        keyStore.setCertificateEntry("cnnturk", ca1)
-
-
-        val caInput2 = context.resources.openRawResource(R.raw.sozcu_cert)
-        val ca2 = cf.generateCertificate(caInput2)
-        caInput2.close()
-        keyStore.setCertificateEntry("sozcu", ca2)
-
-
-        val caInput3 = context.resources.openRawResource(R.raw.haberturk_cert)
-        val ca3 = cf.generateCertificate(caInput3)
-        caInput3.close()
-        keyStore.setCertificateEntry("haberturk", ca3)
-
-        val caInput4 = context.resources.openRawResource(R.raw.hurriyet_)
-        val ca4 = cf.generateCertificate(caInput4)
-        caInput4.close()
-        keyStore.setCertificateEntry("hurriyet", ca4)
-
-        val caInput5 = context.resources.openRawResource(R.raw.milliyet_cert)
-        val ca5 = cf.generateCertificate(caInput5)
-        caInput5.close()
-        keyStore.setCertificateEntry("milliyet", ca5)
-
-        val caInput6 = context.resources.openRawResource(R.raw.turkiyegazetesi_cert)
-        val ca6 = cf.generateCertificate(caInput6)
-        caInput6.close()
-        keyStore.setCertificateEntry("turkiyegazetesi", ca6)
-
-        val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-        tmf.init(keyStore)
-
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, tmf.trustManagers, SecureRandom())
-
-        return OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, tmf.trustManagers[0] as X509TrustManager)
-            .build()
-    }
-
-
-
-    val okHttpClient = getSecureOkHttpClientMultipleCerts(application)
 
     private val retrofitCnnTurk = Retrofit.Builder()
         .baseUrl(BASE_URL_CNNTURK)
